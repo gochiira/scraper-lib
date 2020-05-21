@@ -1,5 +1,5 @@
-from util import PixivError
-from session import Requester
+from .util import PixivError
+from .session import Requester
 from datetime import datetime
 import hashlib
 

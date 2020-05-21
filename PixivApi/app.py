@@ -1,5 +1,5 @@
-from util import checkRefresh, PixivError
-from login import PixivLoginApi
+from .util import checkRefresh, PixivError
+from .login import PixivLoginApi
 import os.path
 
 

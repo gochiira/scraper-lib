@@ -1,36 +1,11 @@
-from pixivpy3 import *
+from PixivApi.pixiv import PixivClient
 from datetime import datetime
-import livejson
 import traceback
 
 
 class IllustGetter():
     def __init__(self, authFile="pixiv_auth.json"):
-        self.cl = AppPixivAPI()
-        self.tokens = livejson.File(authFile)
-        self.cl.set_auth(
-            access_token=self.tokens['access_token'],
-            refresh_token=self.tokens['refresh_token']
-        )
-        self.refreshToken()
-
-    def refreshToken(self):
-        now = datetime.now()
-        last_refresh = datetime.strptime(
-            self.tokens['last_refresh'],
-            '%Y-%m-%d %H:%M:%S'
-        )
-        if (now - last_refresh).seconds > 3600:
-            try:
-                self.cl.auth()
-            except:
-                self.cl.login(
-                    self.tokens['username'],
-                    self.tokens['password']
-                )
-            self.tokens['access_token'] = self.cl.access_token
-            self.tokens['refresh_token'] = self.cl.refresh_token
-            self.tokens['last_refresh'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        self.cl = PixivClient(authFile=authFile)
 
     def validateText(self, text):
         ngWords = [
@@ -64,18 +39,14 @@ class IllustGetter():
         return True
 
     def getIllust(self, illust_address):
-        self.refreshToken()
         try:
             if "pixiv.net/artworks/" not in illust_address:
                 raise Exception()
             has_param = illust_address.find("?")
             if has_param != -1:
                 illust_address = illust_address[:has_param]
-            print(illust_address)
             illust_id = int(illust_address.split("/")[-1])
-            print(illust_id)
-            illust = self.cl.illust_detail(illust_id)
-            print(illust)
+            illust = self.cl.getIllustDetail(illust_id)
             illust = illust["illust"]
         except Exception as e:
             traceback.print_exc()

@@ -1,5 +1,5 @@
-from util import checkRefresh
-from login import PixivLoginApi
+from .util import checkRefresh
+from .login import PixivLoginApi
 
 
 class PixivPublicApi(PixivLoginApi):

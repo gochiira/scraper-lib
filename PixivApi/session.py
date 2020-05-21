@@ -1,4 +1,4 @@
-from util import PixivError
+from .util import PixivError
 import requests
 
 
