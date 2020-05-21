@@ -1,5 +1,5 @@
-from SauceNaoApi.saucenao import SauceNaoClient
-from ImgurApi.imgur import ImgurClient
+from .SauceNaoApi.saucenao import SauceNaoClient
+from .ImgurApi.imgur import ImgurClient
 
 
 class SauceNaoImageSearch():

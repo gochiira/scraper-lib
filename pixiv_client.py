@@ -1,6 +1,7 @@
-from PixivApi.pixiv import PixivClient
+from .PixivApi.pixiv import PixivClient
 from datetime import datetime
 import traceback
+import os.path
 
 
 class IllustGetter():
@@ -33,9 +34,8 @@ class IllustGetter():
             text = text.replace(g, "")
         return text
 
-    def downloadIllust(self, illust_src, path):
-        self.refreshToken()
-        self.cl.download(illust_src, fname=path)
+    def downloadIllust(self, url, prefix='', name=None, path=os.path.curdir, replace=False):
+        self.cl.downloadIllust(url, prefix=prefix, name=name, path=path, replace=replace)
         return True
 
     def getIllust(self, illust_address):
@@ -48,7 +48,7 @@ class IllustGetter():
             illust_id = int(illust_address.split("/")[-1])
             illust = self.cl.getIllustDetail(illust_id)
             illust = illust["illust"]
-        except Exception as e:
+        except:
             traceback.print_exc()
             return {}
         if illust['meta_single_page'] != {}:
@@ -76,12 +76,12 @@ class IllustGetter():
                     "large_src": m["large_src"],
                     "thumb_src": m["thumb_src"]
                 } for m in illust['meta_pages']],
-                'tags': [ t["name"] for t in illust['tags'] ],
+                'tags': [t["name"] for t in illust['tags']],
                 'source': illust_address,
                 'artist': self.validateText(illust['user']['name']),
                 'R18': illust['x_restrict']
             },
-            'user' : {
+            'user': {
                 'id': illust['user']['id'],
                 'screen_name': illust['user']['account'],
                 'name': self.validateText(illust['user']['name']),

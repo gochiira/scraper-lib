@@ -1,4 +1,4 @@
-from TwitterApi.twitter import TwitterClient
+from .TwitterApi.twitter import TwitterClient
 import requests
 import json
 
