@@ -1,4 +1,4 @@
-from PixivApi.pixiv import PixivClient
+from .PixivApi.pixiv import PixivClient
 from datetime import datetime
 import traceback
 import os.path
