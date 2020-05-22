@@ -4,7 +4,7 @@ import json
 
 
 class TweetGetter():
-    def __init__(self, authFile):
+    def __init__(self, authFile="twitter_auth.json"):
         with open(authFile, "r") as f:
             token = json.loads(f.read())
         self.cl = TwitterClient(
