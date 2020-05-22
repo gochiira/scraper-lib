@@ -23,19 +23,20 @@ class PixivAppApi(PixivLoginApi):
         return self.session.get(endpoint=endpoint, params=params).json()
 
     @checkRefresh
-    def downloadIllust(self, url, prefix='', name=None, path=os.path.curdir, replace=False):
+    def downloadIllust(self, url, name='', path='', prefix='', replace=False):
         """Download image"""
-        if not name:
-            name = os.path.basename(url)
-        name = prefix + name
-        imgPath = os.path.join(path, name)
-        if os.path.exists(imgPath) and not replace:
+        if not path:
+            if not name:
+                name = os.path.basename(url)
+            name = prefix + name
+            path = os.path.join(os.path.curdir, name)
+        if os.path.exists(path) and not replace:
             return False
         response = self.session.get(url)
         if response.status_code != 200:
             raise PixivError(
                 f'Download Illust error! Response: {response.text}'
             )
-        with open(imgPath, 'wb') as outFile:
+        with open(path, 'wb') as outFile:
             outFile.write(response.content)
         return True
