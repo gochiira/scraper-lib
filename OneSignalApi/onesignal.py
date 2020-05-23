@@ -52,9 +52,12 @@ class OneSignalClient():
 
 
 if __name__ == "__main__":
-    APP_ID = ""
-    KEY = ""
-    USER = ""
+    import json
+    with open('blueprints/lib/onesignal_auth.json', 'r') as f:
+        data = json.loads(f.read())
+        KEY = data['token']
+        APP_ID = data['appId']
+    USER = "cd61fdac-ea24-4c77-a0ce-1293a9ecbfb3"
     cl = OneSignalClient(APP_ID, KEY)
     print(
         cl.sendNotify(

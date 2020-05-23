@@ -1,4 +1,4 @@
-from .OneSignal.Api.onesignal import OneSignalClient
+from .OneSignalApi.onesignal import OneSignalClient
 
 
 class OneSignalNotifyClient():
