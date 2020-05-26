@@ -7,6 +7,7 @@ targetType:
 0 すべて
 1 タグ
 2 絵師
+9 お知らせ(0:アプデ 1:誕生日 2:今日のおすすめ)
 
 targetMethod:
 0 OneSignal
@@ -89,7 +90,7 @@ class NotifyClient():
         )
         return lineNotifyTokens
 
-    def getNotifyTarget(self, tagIDs, artistID):
+    def getArtNotifyTarget(self, tagIDs, artistID):
         datas = self.conn.get(
             """SELECT userLineToken, userOneSignalID, userTwitterID FROM data_user
             WHERE userID IN (
@@ -102,6 +103,24 @@ class NotifyClient():
                     )
             )""",
             (tagIDs, artistID)
+        )
+        lineTokens = [d[0] for d in datas if d[0] is not None]
+        oneSignalIds = [d[1].split(",") for d in datas if d[1] is not None]
+        oneSignalIds = [flatten for inner in oneSignalIds for flatten in inner]
+        twitterIds = [d[2] for d in datas if d[2] is not None]
+        return lineTokens, oneSignalIds, twitterIds
+
+    def getTextNotifyTarget(self, targetID):
+        datas = self.conn.get(
+            """SELECT userLineToken, userOneSignalID, userTwitterID FROM data_user
+            WHERE userID IN (
+                SELECT userID FROM data_notify
+                WHERE
+                    (
+                        targetType=9 AND targetID=%s
+                    )
+            )""",
+            (targetID)
         )
         lineTokens = [d[0] for d in datas if d[0] is not None]
         oneSignalIds = [d[1].split(",") for d in datas if d[1] is not None]
@@ -127,7 +146,7 @@ class NotifyClient():
             (illustID,)
         )[0]
         # 対象ユーザーをまとめて取り出し
-        notifyTargets = self.getNotifyTarget(
+        notifyTargets = self.getArtNotifyTarget(
             targetTags,
             targetArtist
         )
@@ -151,5 +170,13 @@ class NotifyClient():
                 cl.sendNotify(data, "新しいイラストが投稿されました!", text, url)
         return True
 
-    def sendMessageNotify(self, title, text, image):
-        pass
+    def sendMessageNotify(self, targetID, title, text=None, url=None, image=None):
+        # テキストで通知を送る (ID0:アプデ ID1:誕生日 ID2:おすすめ)
+        notifyTargets = self.getTextNotifyTarget(
+            targetID
+        )
+        # 通知を送る
+        for cl, data in zip(self.clients, notifyTargets):
+            if cl is not None:
+                cl.sendNotify(data, title, text, url, image)
+        return True
