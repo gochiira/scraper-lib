@@ -23,11 +23,11 @@ class NotifyClient():
             auth = json.loads(f.read())
         self.conn = conn
         self.clients = [
+            LineNotifyWrappedClient(),
             OneSignalWrappedClient(
                 auth["appId"],
                 auth["token"]
             ),
-            LineNotifyWrappedClient(),
             None
         ]
 
@@ -115,12 +115,9 @@ class NotifyClient():
             """SELECT userLineToken, userOneSignalID, userTwitterID FROM data_user
             WHERE userID IN (
                 SELECT userID FROM data_notify
-                WHERE
-                    (
-                        targetType=9 AND targetID=%s
-                    )
+                WHERE (targetType=9 AND targetID=%s)
             )""",
-            (targetID)
+            (targetID,)
         )
         lineTokens = [d[0] for d in datas if d[0] is not None]
         oneSignalIds = [d[1].split(",") for d in datas if d[1] is not None]
@@ -144,7 +141,7 @@ class NotifyClient():
         targetArtist = self.conn.get(
             "SELECT artistID FROM data_illust WHERE illustID=%s",
             (illustID,)
-        )[0]
+        )[0][0]
         # 対象ユーザーをまとめて取り出し
         notifyTargets = self.getArtNotifyTarget(
             targetTags,
@@ -177,6 +174,7 @@ class NotifyClient():
         )
         # 通知を送る
         for cl, data in zip(self.clients, notifyTargets):
+            #print(data)
             if cl is not None:
                 cl.sendNotify(data, title, text, url, image)
         return True

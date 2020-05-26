@@ -55,6 +55,7 @@ class IllustGetter():
             illust = self.cl.getIllustDetail(illust_id)
             illust = illust["illust"]
         except:
+            self.cl.refreshLogin()
             try:
                 illust = self.cl.getIllustDetail(illust_id)
                 illust = illust["illust"]
