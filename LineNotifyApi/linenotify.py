@@ -4,12 +4,15 @@ import requests
 class LineNotifyClient():
     baseUrl = "https://notify-api.line.me/api/"
     headers = {
-        "Authorization": "Bearer ",
+        "Authorization": "Bearer <TOKEN>",
         "Content-Type": "application/x-www-form-urlencoded"
     }
 
-    def __init__(self, token):
-        self.headers["Authorization"] += token
+    def __init__(self, token=None):
+        self.headers["Authorization"] = f"Bearer {token}"
+
+    def setToken(self, token):
+        self.headers["Authorization"] = f"Bearer {token}"
 
     def sendNotify(
         self,

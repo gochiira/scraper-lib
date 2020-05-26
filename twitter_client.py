@@ -48,6 +48,7 @@ class TweetGetter():
             if "/status/" not in tweet_address\
                     or "twitter.com" not in tweet_address:
                 raise Exception()
+            tweet_address = tweet_address.replace("mobile.","")
             hasParam = tweet_address.find("?")
             if hasParam != -1:
                 tweet_address = tweet_address[:hasParam]
