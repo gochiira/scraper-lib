@@ -55,8 +55,12 @@ class IllustGetter():
             illust = self.cl.getIllustDetail(illust_id)
             illust = illust["illust"]
         except:
-            traceback.print_exc()
-            return {}
+            try:
+                illust = self.cl.getIllustDetail(illust_id)
+                illust = illust["illust"]
+            except:
+                traceback.format_exc()
+                return {}
         if illust['meta_single_page'] != {}:
             illust['meta_pages'] = [{
                 'large_src': illust['meta_single_page']['original_image_url'],
