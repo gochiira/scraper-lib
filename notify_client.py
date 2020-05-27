@@ -91,18 +91,22 @@ class NotifyClient():
         return lineNotifyTokens
 
     def getArtNotifyTarget(self, tagIDs, artistID):
+        # ここは公開すると最悪インジェクション仕放題なので注意
+        # (リストを入れるにはプレースホルダを上手く使う必要あり)
+        tagIDs = [str(int(t)) for t in tagIDs]
+        inParams = "(" + ",".join([t for t in tagIDs]) + ")"
         datas = self.conn.get(
-            """SELECT userLineToken, userOneSignalID, userTwitterID FROM data_user
+            f"""SELECT userLineToken, userOneSignalID, userTwitterID FROM data_user
             WHERE userID IN (
                 SELECT userID FROM data_notify
                 WHERE
                     (
                         targetType=0
-                        OR (targetType=1 AND targetID IN %s)
+                        OR (targetType=1 AND targetID IN {inParams})
                         OR (targetType=2 AND targetID=%s)
                     )
             )""",
-            (tagIDs, artistID)
+            (artistID,)
         )
         lineTokens = [d[0] for d in datas if d[0] is not None]
         oneSignalIds = [d[1].split(",") for d in datas if d[1] is not None]
