@@ -6,7 +6,7 @@ class LineNotifyWrappedClient():
         self.cl = LineNotifyClient(token)
 
     def sendNotify(self, tokens, title, text=None, url=None, image=None):
-        message = title
+        message = "\n" + title
         resps = []
         if text:
             message += f"\n{text}"

@@ -96,27 +96,45 @@ class NotifyClient():
         tagIDs = [str(int(t)) for t in tagIDs]
         inParams = "(" + ",".join([t for t in tagIDs]) + ")"
         datas = self.conn.get(
-            f"""SELECT userLineToken, userOneSignalID, userTwitterID FROM data_user
-            WHERE userID IN (
-                SELECT userID FROM data_notify
-                WHERE
-                    (
-                        targetType=0
-                        OR (targetType=1 AND targetID IN {inParams})
-                        OR (targetType=2 AND targetID=%s)
+            f"""SELECT
+                userOneSignalID, userLineToken, userTwitterID, targetMethod
+            FROM
+                data_notify
+            NATURAL JOIN
+                data_user
+            WHERE
+                (
+                    targetType = 0 OR(
+                        targetType = 1 AND targetID IN {inParams}
+                    ) OR(
+                        targetType = 2 AND targetID = %s
                     )
             )""",
             (artistID,)
         )
-        lineTokens = [d[0] for d in datas if d[0] is not None]
-        oneSignalIds = [d[1].split(",") for d in datas if d[1] is not None]
+        oneSignalIds = [
+            d[0].split(",")
+            for d in datas
+            if d[1] is not None and d[3] == 0
+        ]
         oneSignalIds = [flatten for inner in oneSignalIds for flatten in inner]
-        twitterIds = [d[2] for d in datas if d[2] is not None]
+        lineTokens = [
+            d[1]
+            for d in datas
+            if d[0] is not None and d[3] == 1
+        ]
+        twitterIds = [
+            d[2]
+            for d in datas
+            if d[2] is not None and d[3] == 2
+        ]
         return lineTokens, oneSignalIds, twitterIds
 
     def getTextNotifyTarget(self, targetID):
         datas = self.conn.get(
-            """SELECT userLineToken, userOneSignalID, userTwitterID FROM data_user
+            """SELECT userLineToken, userOneSignalID,
+            userTwitterID, targetMethod
+            FROM data_user
             WHERE userID IN (
                 SELECT userID FROM data_notify
                 WHERE (targetType=9 AND targetID=%s)
