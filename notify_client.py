@@ -115,13 +115,13 @@ class NotifyClient():
         oneSignalIds = [
             d[0].split(",")
             for d in datas
-            if d[1] is not None and d[3] == 0
+            if d[0] is not None and d[3] == 0
         ]
         oneSignalIds = [flatten for inner in oneSignalIds for flatten in inner]
         lineTokens = [
             d[1]
             for d in datas
-            if d[0] is not None and d[3] == 1
+            if d[1] is not None and d[3] == 1
         ]
         twitterIds = [
             d[2]
