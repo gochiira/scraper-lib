@@ -8,6 +8,10 @@ def checkRefresh(func):
             if "error" in result.keys():
                 if "check your Access Token to fix" in result["error"]["message"]:
                     args[0].refreshLogin(force=True)
+                    args[0].session.setHeaders(
+                        {'Authorization': f"Bearer {args[0].tokens['access_token']}"}
+                    )
+                    result = func(*args, **kwargs)
         return result
     return __checkRefresh
 
