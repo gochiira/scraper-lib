@@ -63,7 +63,7 @@ class SeigaGetter():
             return {}
         resp = {
             'illust': {
-                'type': 'twitter',
+                'type': 'nico_seiga',
                 'id': seiga_id,
                 'title': seiga['title'],
                 'caption': seiga['description'],
