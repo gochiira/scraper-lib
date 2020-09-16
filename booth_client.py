@@ -71,7 +71,7 @@ class BoothGetter():
                 ],
                 'tags': product["product"]['tags'],
                 'source': booth_address,
-                'artist': product["shop"]["name"],
+                'artist': product["shop"]["title"],
                 'R18': False
             },
             'shop': {
