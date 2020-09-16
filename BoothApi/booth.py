@@ -81,8 +81,6 @@ class Booth(BoothConfig):
             cookies=self.cookies
         )
         page = lxml.html.fromstring(resp.text)
-        with open("site.html", "w", encoding="utf8") as f:
-            f.write(resp.text)
         shop_title = page.xpath(
             '//div[@class="u-text-ellipsis"]/text()'
         )[0]
