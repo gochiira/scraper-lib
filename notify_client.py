@@ -1,5 +1,6 @@
 from .linenotify_client import LineNotifyWrappedClient
 from .onesignal_client import OneSignalWrappedClient
+from .telegram_client import TelegramWrappedClient
 import json
 
 """
@@ -17,19 +18,30 @@ targetMethod:
 
 
 class NotifyClient():
-    def __init__(self, conn, oneSignalAuthFile="onesignal_auth.json"):
+    def __init__(
+        self,
+        conn,
+        oneSignalAuthFile="onesignal_auth.json",
+        telegramAuthFile="telegram_auth.json"
+    ):
         '''初期化時にクライアント作成'''
         with open(oneSignalAuthFile, "r") as f:
-            auth = json.loads(f.read())
+            auth_o = json.loads(f.read())
+        with open(telegramAuthFile, "r") as f:
+            auth_t = json.loads(f.read())
         self.conn = conn
         self.clients = [
             LineNotifyWrappedClient(),
             OneSignalWrappedClient(
-                auth["appId"],
-                auth["token"]
+                auth_o["appId"],
+                auth_o["token"]
             ),
-            None
+            None,
+            TelegramWrappedClient(
+                auth_t["token"]
+            )
         ]
+        self.clients[3].isTelegram = True
 
     def getOneSignalTarget(self, targetType, targetID):
         '''ターゲット手動取得'''
@@ -128,7 +140,8 @@ class NotifyClient():
             for d in datas
             if d[2] is not None and d[3] == 2
         ]
-        return lineTokens, oneSignalIds, twitterIds
+        telegramIds = []
+        return lineTokens, oneSignalIds, twitterIds, telegramIds
 
     def getTextNotifyTarget(self, targetID):
         datas = self.conn.get(
@@ -183,10 +196,18 @@ class NotifyClient():
             ""
         ])
         url = f"https://illust.gochiusa.team/arts/{illustID}"
+        # タグリスト生成
+        tags = self.conn.get(
+            f"""SELECT tagName FROM info_tag NATURAL JOIN
+                (SELECT tagID FROM data_tag WHERE illustID={illustID}) AS T2"""
+        )
         # 通知を送る
         for cl, data in zip(self.clients, notifyTargets):
-            if cl is not None:
+            if cl is not None and not cl.isTelegram:
                 cl.sendNotify(data, "新しいイラストが投稿されました!", text, url)
+            elif cl.isTelegram:
+                tags = [t[0] for t in tags]
+                cl.sendNotify(tags, title, text, url)
         return True
 
     def sendMessageNotify(self, targetID, title, text=None, url=None, image=None):
