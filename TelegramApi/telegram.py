@@ -3,6 +3,7 @@ import requests
 
 class TelegramClient():
     baseUrl = "https://api.telegram.org/bot"
+    precending = ['_', '*', '[', ']', '(', ')', '~', '`', '<', '>', '#', '+', '-', '=', '|', '{', '}', '.', '!']
 
     def __init__(self, token=None):
         self.token = token
@@ -18,6 +19,10 @@ class TelegramClient():
 
     def getUpdates(self):
         return self.sendRequest("getUpdates")
+
+    def escapeText(self, text):
+        result = [t if t not in self.precending else "\\"+t for t in text]
+        return "".join(result)
 
     def sendMessage(
         self,

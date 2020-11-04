@@ -1,6 +1,7 @@
 from .linenotify_client import LineNotifyWrappedClient
 from .onesignal_client import OneSignalWrappedClient
 from .telegram_client import TelegramWrappedClient
+# from db import SQLHandler
 import json
 
 """
@@ -183,8 +184,9 @@ class NotifyClient():
             targetArtist
         )
         # メッセージ作成
-        title, description, artist, R18 = self.conn.get(
-            """SELECT illustName, illustDescription, artistName, illustNsfw
+        title, description, artist, R18, extension = self.conn.get(
+            """SELECT illustName, illustDescription, artistName, illustNsfw,
+            illustExtension
             FROM data_illust INNER JOIN info_artist
             ON info_artist.artistID=data_illust.artistID WHERE illustID= %s""",
             (illustID,)
@@ -205,9 +207,9 @@ class NotifyClient():
         for cl, data in zip(self.clients, notifyTargets):
             if cl is not None and not cl.isTelegram:
                 cl.sendNotify(data, "新しいイラストが投稿されました!", text, url)
-            elif cl.isTelegram:
+            elif cl is not None:
                 tags = [t[0] for t in tags]
-                cl.sendNotify(tags, title, text, url)
+                cl.sendNotify(tags, title, text, f"https://cdn.gochiusa.team/illusts/orig/{illustID}.{extension}}")
         return True
 
     def sendMessageNotify(self, targetID, title, text=None, url=None, image=None):
@@ -217,7 +219,13 @@ class NotifyClient():
         )
         # 通知を送る
         for cl, data in zip(self.clients, notifyTargets):
-            #print(data)
+            # print(data)
             if cl is not None:
                 cl.sendNotify(data, title, text, url, image)
         return True
+
+
+if __name__ == "__main__":
+    # cl = NotifyClient(SQLHandler())
+    # print(cl.sendArtNotify(1))
+    pass

@@ -15,16 +15,23 @@ class TelegramWrappedClient():
         self.cl = TelegramClient(telegramToken)
 
     def sendNotify(self, tags, title, text, url):
+        message = [
+            text,
+            "<Tags>",
+            "\n".join(tags),
+            "<Url>",
+            url
+        ]
         self.cl.sendPhoto(
             self.GROUPS["ALL"],
-            caption=text+"\n<Tags>"+"\n".join(tags),
+            caption=self.cl.escapeText("\n".join(message)),
             file_id_or_url=url
         )
         for t in self.GROUPS.keys():
             if t in tags:
                 return self.cl.sendPhoto(
                     self.GROUPS[t],
-                    caption=text+"\n<Tags>"+"\n".join(tags),
+                    caption=self.cl.escapeText("\n".join(message)),
                     file_id_or_url=url
                 )
 
