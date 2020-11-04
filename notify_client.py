@@ -209,7 +209,7 @@ class NotifyClient():
                 cl.sendNotify(data, "新しいイラストが投稿されました!", text, url)
             elif cl is not None:
                 tags = [t[0] for t in tags]
-                cl.sendNotify(tags, title, text, f"https://cdn.gochiusa.team/illusts/orig/{illustID}.{extension}}")
+                cl.sendNotify(tags, title, text, f"https://cdn.gochiusa.team/illusts/orig/{illustID}.{extension}")
         return True
 
     def sendMessageNotify(self, targetID, title, text=None, url=None, image=None):
