@@ -58,7 +58,7 @@ class Ascii2d():
                 }
             }
             for hash, size, thumb, title, link in zip(
-                hashs[1:], sizes[1:], thumbs[1:], titles, links
+                hashs[1:], sizes[1:], thumbs, titles, links
             )
         ]
 
