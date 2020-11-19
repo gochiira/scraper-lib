@@ -29,7 +29,7 @@ class NicoSeiga(NicoSeigaConfig):
             with open(filename, "r", encoding="utf8") as f:
                 self.cookies = json.loads(f.read())
         else:
-            print("WARN: Not logged in")
+            print("NicoSeiga: Not logged in.")
 
     def login(self, username, password):
         resp = requests.post(
@@ -54,7 +54,7 @@ class NicoSeiga(NicoSeigaConfig):
         if "user_session" not in cookies:
             raise Exception("Login failed")
         self.cookies = cookies
-        print("Login succeed.")
+        print("NicoSeiga: Login succeed.")
 
     def exportToken(self, filename):
         with open(filename, "w", encoding="utf8") as f:
@@ -157,8 +157,6 @@ class NicoSeiga(NicoSeigaConfig):
             cookies=self.cookies
         )
         page = lxml.html.fromstring(resp.text)
-        with open("site.html", "w", encoding="utf8") as f:
-            f.write(resp.text)
         created_time = page.xpath(
             '//span[@class="created"]/text()'
         )
@@ -171,7 +169,6 @@ class NicoSeiga(NicoSeigaConfig):
         description = page.xpath(
             '//p[@class="discription"]/text()'
         )
-        print(description)
         thumbnail = page.xpath(
             '//a[@id="illust_link"]/img/@src'
         )
