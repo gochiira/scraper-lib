@@ -4,14 +4,18 @@ import json
 
 
 class TweetGetter():
-    def __init__(self, authFile="twitter_auth.json"):
-        with open(authFile, "r") as f:
-            token = json.loads(f.read())
+    def __init__(
+        self,
+        consumer_key,
+        consumer_secret,
+        auth_token,
+        auth_secret
+    ):
         self.cl = TwitterClient(
-            token["consumer_key"],
-            token["consumer_secret"],
-            token["auth_token"],
-            token["auth_token_secret"]
+            consumer_key,
+            consumer_secret,
+            auth_token,
+            auth_secret
         )
 
     def validateText(self, text):
@@ -103,5 +107,5 @@ class TweetGetter():
 
 
 if __name__ == "__main__":
-    tg = TweetGetter("twitter_auth.json")
+    tg = TweetGetter()
     print(tg.getTweet("https://twitter.com/usagicandy_taku/status/1246029844590149633"))
