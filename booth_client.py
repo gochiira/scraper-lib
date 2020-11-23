@@ -29,7 +29,8 @@ class BoothGetter():
 
     def getIllustSourceUrl(self, booth_address):
         try:
-            if "https://booth.pm/ja/items/" not in booth_address:
+            if "https://booth.pm/ja/items/" not in booth_address\
+                    and "booth.pm/items/" not in booth_address:
                 raise Exception()
             hasParam = booth_address.find("?")
             if hasParam != -1:
@@ -50,7 +51,8 @@ class BoothGetter():
 
     def getProduct(self, booth_address):
         try:
-            if "https://booth.pm/ja/items/" not in booth_address:
+            if "https://booth.pm/ja/items/" not in booth_address\
+                    and "booth.pm/items/" not in booth_address:
                 raise Exception()
             hasParam = booth_address.find("?")
             if hasParam != -1:
