@@ -22,24 +22,21 @@ class NotifyClient():
     def __init__(
         self,
         conn,
-        oneSignalAuthFile="onesignal_auth.json",
-        telegramAuthFile="telegram_auth.json"
+        onesignal_appid,
+        onesignal_token,
+        telegram_token
     ):
         '''初期化時にクライアント作成'''
-        with open(oneSignalAuthFile, "r") as f:
-            auth_o = json.loads(f.read())
-        with open(telegramAuthFile, "r") as f:
-            auth_t = json.loads(f.read())
         self.conn = conn
         self.clients = [
             LineNotifyWrappedClient(),
             OneSignalWrappedClient(
-                auth_o["appId"],
-                auth_o["token"]
+                onesignal_appid,
+                onesignal_token
             ),
             None,
             TelegramWrappedClient(
-                auth_t["token"]
+                telegram_token
             )
         ]
         self.clients[3].isTelegram = True
@@ -205,14 +202,26 @@ class NotifyClient():
         )
         # 通知を送る
         for cl, data in zip(self.clients, notifyTargets):
-            if cl is not None and not cl.isTelegram:
+            if cl is not None and not hasattr(cl, "isTelegram"):
                 cl.sendNotify(data, "新しいイラストが投稿されました!", text, url)
             elif cl is not None:
                 tags = [t[0] for t in tags]
-                cl.sendNotify(tags, title, text, f"https://cdn.gochiusa.team/illusts/orig/{illustID}.{extension}")
+                cl.sendNotify(
+                    tags,
+                    title,
+                    text,
+                    f"https://cdn.gochiusa.team/illusts/orig/{illustID}.{extension}"
+                )
         return True
 
-    def sendMessageNotify(self, targetID, title, text=None, url=None, image=None):
+    def sendMessageNotify(
+        self,
+        targetID,
+        title,
+        text=None,
+        url=None,
+        image=None
+    ):
         # テキストで通知を送る (ID0:アプデ ID1:誕生日 ID2:おすすめ)
         notifyTargets = self.getTextNotifyTarget(
             targetID
